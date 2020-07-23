@@ -1,4 +1,4 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2020 Albert Niyonsenga. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -11,32 +11,28 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+This code pans between two samples based on the throttle position of a Thrustmaster T16000m Throttle stick
 ==============================================================================*/
-// This is for music production
+//This is for music production
 #include <Audio.h>
 #include <Wire.h>
 #include <SD.h>
 #include <SPI.h>
 #include <SerialFlash.h>
 
+//Include Main Functions
 #include <TensorFlowLite.h>
-
-#include "main_functions.h"
-
-#include "constants.h"
-#include "output_handler.h"
 #include "model_data.h"
 #include "tensorflow/lite/experimental/micro/kernels/all_ops_resolver.h"
 #include "tensorflow/lite/experimental/micro/micro_error_reporter.h"
 #include "tensorflow/lite/experimental/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
-#include "chords.h" // this is to get the chord data
 
-
-#include "USBHost_t36.h"
 
 //USB Host Setup
+#include "USBHost_t36.h"
 USBHost myusb;
 USBHub hub1(myusb);
 USBHIDParser hid1(myusb);
@@ -100,10 +96,9 @@ constexpr int kTensorArenaSize = 2 * 1024;
 uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
-float x_input = 0;
+float x_input = 0; //use this for the input from our controller
 
 
-// The name of this function is important for Arduino compatibility.
 void setup() {
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
@@ -142,9 +137,6 @@ void setup() {
   input = interpreter->input(0);
   output = interpreter->output(0);
 
-  // Keep track of how many inferences we have performed.
-  inference_count = 0;
-
   // Setup SD Card
   SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
@@ -176,10 +168,10 @@ void loop() {
   myusb.Task();
   PrintDeviceListChanges();
   
-  x_input = joysticks[0].getAxis(2); //raw input from controller
+  x_input = joysticks[0].getAxis(2); //raw input from controller(throttle position)
   float x_val = x_input/65535; // convert so that it is between 0 and 1
   
-  //Play Samples
+  //Continuously loop Samples
   if (playWav1.isPlaying() == false) {
     //Serial.println("Start playing 1");
     playWav1.play("RYTHM1.WAV");
@@ -202,26 +194,20 @@ void loop() {
     return;
   }
 
-  // Increment the inference_counter, and reset it if we have reached
-  // the total number per cycle
-  inference_count += 1;
-  if (inference_count >= kInferencesPerCycle) inference_count = 0;
-
-  // play music
+  // Get outputs
   float y1 = output->data.f[0];
   float y2 = -y1 + 1;
 
-  // change gain
+  // change gain(normalize to 1)
   float sum = y1 + y2;
   float gain1 = y1/sum;
-  float gain2 = 1 - gain1;
+  float gain2 = 1 - gain1; 
+  
   // Change the mixing between the samples being played
   mixer1.gain(0, gain1);
   mixer1.gain(1, gain2);
   mixer2.gain(0, gain1);
   mixer2.gain(1, gain2);
-
-  //
 }
 
 //=============================================================================

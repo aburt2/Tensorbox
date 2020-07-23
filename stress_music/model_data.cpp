@@ -1,4 +1,4 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2020 Albert Niyonsenga. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 // Automatically created from a TensorFlow Lite flatbuffer using the command:
-// xxd -i sine_model.tflite > sine_model_data.cc
-// See the README for a full description of the creation process.
+// xxd -i model.tflite > model_data.cc
 
 #include "model_data.h"
 
