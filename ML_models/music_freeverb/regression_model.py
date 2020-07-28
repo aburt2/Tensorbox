@@ -14,15 +14,11 @@ import tensorflow_docs.plots
 import tensorflow_docs.modeling
 
 def build_model():
-  # Create layers
-  inputs = keras.Input(shape=(3,))
-  dense = layers.Dense(10, activation="sigmoid")
-  x1 = dense(inputs)
-  x2 = layers.Dense(10, activation="sigmoid")(x1)
-  x3 = layers.Dense(10, activation="sigmoid")(x2)
-  outputs = layers.Dense(8)(x3)
-
-  model = keras.Model(inputs=inputs, outputs=outputs, name="reverb")
+  model = keras.Sequential([
+    layers.Dense(10, activation='sigmoid', input_shape=[3,]),
+    layers.Dense(10, activation='sigmoid'),
+    layers.Dense(8)
+  ])
 
   optimizer = tf.keras.optimizers.RMSprop(0.001)
 
@@ -34,55 +30,66 @@ def build_model():
 # Import data
 dataset_path = "C:/Users/aniyo/Documents/Honours_Code/ML_models/music_freeverb/data.csv"
 dataset = pd.read_csv(dataset_path)
+inputs = ['in1','in2','in3']
+outputs = ['out1','out2','out3','out4','out5','out6','out7','out8']
 
 #Split dataset
 train_dataset = dataset.sample(frac=0.8,random_state=0)
 test_dataset = dataset.drop(train_dataset.index)
 
 #Get test and train_labels
-x_train = np.array([train_dataset['in1'],train_dataset['in2'],train_dataset['in3']])
-y_train = np.array([train_dataset['out1'],train_dataset['out2'],train_dataset['out3'],train_dataset['out4'],train_dataset['out5'],train_dataset['out6'],train_dataset['out7'],train_dataset['out8']])
+x_train = train_dataset[inputs]
+y_train = train_dataset[outputs]
 
-x_test = np.array([test_dataset['in1'],test_dataset['in2'],test_dataset['in3']])
-y_test = np.array([test_dataset['out1'],test_dataset['out2'],test_dataset['out3'],test_dataset['out4'],test_dataset['out5'],test_dataset['out6'],test_dataset['out7'],test_dataset['out8']])
+x_test = test_dataset[inputs]
+y_test = test_dataset[outputs]
 
-#Reshape inputs
-x_train = x_train.reshape(x_train.shape[1],x_train.shape[0])
-y_train = y_train.reshape(y_train.shape[1],y_train.shape[0])
+#Make into pandas array
+x_train = pd.DataFrame(x_train,columns=inputs)
+y_train = pd.DataFrame(y_train,columns=outputs)
+x_test = pd.DataFrame(x_test,columns=inputs)
+y_test = pd.DataFrame(y_test,columns=outputs)
 
-x_test = x_test.reshape(x_test.shape[1],x_test.shape[0])
-y_test = y_test.reshape(y_test.shape[1],y_test.shape[0])
+#Make dataset
+train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+# Shuffle and slice the dataset.
+train_dataset = train_dataset.shuffle(buffer_size=1024).batch(32)
 
+# Now we get a test dataset.
+test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+test_dataset = test_dataset.batch(64)
 
-#Build Model
+#Build model
 model = build_model()
-model.summary()
 
-EPOCHS = 100
+#Compile model
+model.compile(loss='mse',
+              optimizer=tf.keras.optimizers.RMSprop(0.001),
+              metrics=['mae', 'mse'])
 
-history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=10, validation_split = 0.2, verbose=0,callbacks=[tfdocs.modeling.EpochDots()])
+#Train Model
+history = model.fit(train_dataset,epochs=10)
 
 # Test model
-test_scores = model.evaluate(x_test, y_test, verbose=2)
+test_scores = model.evaluate(test_dataset, verbose=2)
 print("Test loss:", test_scores[0])
 print("Test accuracy:", test_scores[1])
+# Convert the model.
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
 
-# # Convert the model.
-# converter = tf.lite.TFLiteConverter.from_keras_model(model)
-# tflite_model = converter.convert()
+# Save the TF Lite model
+with tf.io.gfile.GFile('model.tflite', 'wb') as f:
+  f.write(tflite_model)
 
-# # Save the TF Lite model.
-# with tf.io.gfile.GFile('model.tflite', 'wb') as f:
-#   f.write(tflite_model)
-
-# plt.plot(test_labels,test_predictions)
-# plt.show()
-# #Plot results so I can see whats up
-# fig,axs = plt.subplots(1,3)
-# idx = 1
+#Visualize it
+# test_predictions = model.predict(x_test)
+# #Plot results so I can see whats up(show how well it predicts outputs)
+# fig,axs = plt.subplots(2,4)
+# idx = 0
 # for ax in axs.flatten():
-#     header = column_names[idx]
-#     ax.scatter(test_labels[header], test_predictions[:,idx-1])
+#     header = outputs[idx]
+#     ax.scatter(y_test[header], test_predictions[:,idx])
 #     x_str = f'True Values [{header}]'
 #     y_str = f'Predictions [{header}]'
 #     ax.set_xlabel(x_str)
@@ -91,5 +98,31 @@ print("Test accuracy:", test_scores[1])
 #     ax.set_xlim(lims)
 #     ax.set_ylim(lims)
 #     ax.plot(lims, lims)
+#     idx += 1
+# plt.show()
+
+#Plot results so I can see whats up(show range of inputs)
+# fig,axs = plt.subplots(1,3)
+# idx = 0
+# for ax in axs.flatten():
+#     header = inputs[idx]
+#     ax.scatter(np.linspace(0,len(x_test),num=len(x_test)),x_test[header])
+#     x_str = f'True Values [{header}]'
+#     y_str = f'Predictions [{header}]'
+#     ax.set_xlabel(x_str)
+#     ax.set_ylabel(y_str)
+#     idx += 1
+# plt.show()
+
+#Plot results so I can see whats up(plot an input to all the outputs)
+# fig,axs = plt.subplots(2,4)
+# idx = 0
+# for ax in axs.flatten():
+#     header = outputs[idx]
+#     ax.scatter(x_test['in3'], test_predictions[:,idx])
+#     x_str = f'True Values [{header}]'
+#     y_str = f'Predictions [{header}]'
+#     ax.set_xlabel(x_str)
+#     ax.set_ylabel(y_str)
 #     idx += 1
 # plt.show()
