@@ -258,18 +258,18 @@ void loop() {
   float vol = 0.3*y8;
   
   // Change the mixing between the samples being played
-  mixer1.gain(0, gain1);
-  mixer1.gain(1, gain2);
-  mixer2.gain(0, gain1);
-  mixer2.gain(1, gain2);
+  mixer1.gain(0, gain2);
+  mixer1.gain(1, gain1);
+  mixer2.gain(0, gain2);
+  mixer2.gain(1, gain1);
 
   //Change freeverb1 mixing
-  mixer3.gain(0, gain3);
-  mixer3.gain(1, gain4);
+  mixer3.gain(0, gain4);
+  mixer3.gain(1, gain3);
 
   //Change freeverb2 mixing
-  mixer4.gain(0, gain5);
-  mixer4.gain(1, gain6);
+  mixer4.gain(0, gain6);
+  mixer4.gain(1, gain5);
 
   // change freeverb
   freeverb1.roomsize(room1);
