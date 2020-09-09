@@ -1,36 +1,4 @@
-/* Copyright 2020 Albert Niyonsenga. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-==============================================================================*/
-
-// Automatically created from a TensorFlow Lite flatbuffer using the command:
-// xxd -i model.tflite > model_data.cc
-
-#include "model_data.h"
-
-// We need to keep the data array aligned on some architectures.
-#ifdef __has_attribute
-#define HAVE_ATTRIBUTE(x) __has_attribute(x)
-#else
-#define HAVE_ATTRIBUTE(x) 0
-#endif
-#if HAVE_ATTRIBUTE(aligned) || (defined(__GNUC__) && !defined(__clang__))
-#define DATA_ALIGN_ATTRIBUTE __attribute__((aligned(4)))
-#else
-#define DATA_ALIGN_ATTRIBUTE
-#endif
-
-const unsigned char model_tflite[] DATA_ALIGN_ATTRIBUTE = {
+unsigned char model_tflite[] = {
   0x1c, 0x00, 0x00, 0x00, 0x54, 0x46, 0x4c, 0x33, 0x00, 0x00, 0x12, 0x00,
   0x1c, 0x00, 0x04, 0x00, 0x08, 0x00, 0x0c, 0x00, 0x10, 0x00, 0x14, 0x00,
   0x00, 0x00, 0x18, 0x00, 0x12, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
@@ -245,5 +213,4 @@ const unsigned char model_tflite[] DATA_ALIGN_ATTRIBUTE = {
   0x64, 0x65, 0x6e, 0x73, 0x65, 0x5f, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x00,
   0xfc, 0xff, 0xff, 0xff, 0x04, 0x00, 0x04, 0x00, 0x04, 0x00, 0x00, 0x00
 };
-
-const int model_tflite_len = 2556;
+unsigned int model_tflite_len = 2556;

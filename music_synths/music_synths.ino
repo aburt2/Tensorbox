@@ -5,37 +5,52 @@
 #include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
-AudioSynthWaveformSine   sine3;          //xy=123.00000381469727,404.00000953674316
-AudioSynthWaveformSine   sine1;          //xy=124.00000381469727,311.00000762939453
-AudioSynthWaveformSine   sine2;          //xy=124.00000381469727,356.00000953674316
-AudioSynthWaveformSine   sine4;          //xy=124.0000057220459,451.00001096725464
-AudioSynthKarplusStrong  string1;        //xy=129,69.00000190734863
+AudioSynthWaveformSine   sine3;          //xy=119.00000381469727,302.0000114440918
+AudioSynthWaveformSine   sine1;          //xy=120,209.00000667572021
+AudioSynthWaveformSine   sine2;          //xy=120.00000381469727,254.0000114440918
+AudioSynthWaveformSine   sine4;          //xy=120.0000057220459,349.00001287460327
+AudioSynthWaveformSine   sine7; //xy=122.00000381469727,526.0000047683716
+AudioSynthWaveformSine   sine5; //xy=123,433
+AudioSynthWaveformSine   sine6; //xy=123.00000381469727,478.0000047683716
+AudioSynthWaveformSine   sine8; //xy=123.0000057220459,573.000006198883
+AudioSynthKarplusStrong  string1;        //xy=129,69.00000762939453
 AudioSynthKarplusStrong  string2;        //xy=129,112.00000190734863
 AudioSynthSimpleDrum     drum1;          //xy=130.00001525878906,30.000001907348633
-AudioMixer4              mixer1;         //xy=340.00000381469727,382.00000381469727
 AudioMixer4              mixer2;         //xy=367,101
-AudioEffectDelay         delay1;         //xy=378.00000381469727,246
+AudioMixer4              mixer1;         //xy=386.00000762939453,254.0000114440918
+AudioMixer4              mixer4; //xy=389.00000762939453,478.0000047683716
 AudioMixer4              mixer3;         //xy=700.0000076293945,213.00000381469727
 AudioOutputI2S           i2s1;           //xy=900.0000114440918,185.00000381469727
 AudioConnection          patchCord1(sine3, 0, mixer1, 2);
 AudioConnection          patchCord2(sine1, 0, mixer1, 0);
 AudioConnection          patchCord3(sine2, 0, mixer1, 1);
 AudioConnection          patchCord4(sine4, 0, mixer1, 3);
-AudioConnection          patchCord5(string1, 0, mixer2, 1);
-AudioConnection          patchCord6(string2, 0, mixer2, 2);
-AudioConnection          patchCord7(drum1, 0, mixer2, 0);
-AudioConnection          patchCord8(mixer1, 0, mixer3, 1);
-AudioConnection          patchCord9(mixer2, delay1);
-AudioConnection          patchCord10(delay1, 0, mixer2, 3);
-AudioConnection          patchCord11(delay1, 0, mixer3, 0);
-AudioConnection          patchCord12(mixer3, 0, i2s1, 0);
-AudioConnection          patchCord13(mixer3, 0, i2s1, 1);
-AudioControlSGTL5000     sgtl5000_1;     //xy=669.0000076293945,406.0000057220459
+AudioConnection          patchCord5(sine7, 0, mixer4, 2);
+AudioConnection          patchCord6(sine5, 0, mixer4, 0);
+AudioConnection          patchCord7(sine6, 0, mixer4, 1);
+AudioConnection          patchCord8(sine8, 0, mixer4, 3);
+AudioConnection          patchCord9(string1, 0, mixer2, 1);
+AudioConnection          patchCord10(string2, 0, mixer2, 2);
+AudioConnection          patchCord11(drum1, 0, mixer2, 0);
+AudioConnection          patchCord12(mixer2, 0, mixer3, 0);
+AudioConnection          patchCord13(mixer1, 0, mixer3, 1);
+AudioConnection          patchCord14(mixer4, 0, mixer3, 2);
+AudioConnection          patchCord15(mixer3, 0, i2s1, 0);
+AudioConnection          patchCord16(mixer3, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=815.0000152587891,401.0000114440918
 // GUItool: end automatically generated code
+
 
 //set audio delays
 const int finger_delay = 5;
 const int hand_delay = 220;
+const float f1 = 1.015;
+const float f2 = 0.503;
+const float f3 = 1.496;
+
+const float f4 = 2;
+const float f5 = 3;
+const float f6 = 4;
 
 //USB Host Setup
 #include "USBHost_t36.h"
@@ -82,6 +97,11 @@ float pattle_input = 0; //Paddle position
 float wheel_input = 0; //Wheel position
 float throttle_button = 0; //Throttle Button
 
+//Set speed values
+float prev_throttle = 0;
+float prev_paddle = 0;
+float prev_z = 0;
+
 //Setup Machine learning
 #include <TensorFlowLite.h>
 #include "model_data.h"
@@ -110,28 +130,43 @@ void setup() {
   AudioMemory(250);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.3);
+  //Sine Group 1
   mixer1.gain(0,0.25); //sine1 gain
   mixer1.gain(1,0.25); //sine2 gain
   mixer1.gain(2,0.25); //sine3 gain
   mixer1.gain(3,0.25); //sine4 gain
+  //Sine Group 2
+  mixer4.gain(0,0.25); //sine5 gain
+  mixer4.gain(1,0.25); //sine6 gain
+  mixer4.gain(2,0.25); //sine7 gain
+  mixer4.gain(3,0.25); //sine8 gain
+  //Drum and Strings
   mixer2.gain(0,0.25); //drum1 gain
   mixer2.gain(1,0.25); //string1 gain
   mixer2.gain(2,0.25); //string2 gain
-  mixer2.gain(3,0.25); //echo gain
-  mixer3.gain(0,0.5); //drum/guitar gain
-  mixer3.gain(1,0.5); //synth gains
-  delay1.delay(0, 400);
+  //Final Mixer
+  mixer3.gain(0,0.33); //drum/guitar gain
+  mixer3.gain(1,0.33); //sine group 1 gains
+  mixer3.gain(2,0.33); //sine group 2 gains
 
   //Set sine settings
   float base_freq = 261;
-  sine1.amplitude(0.5);
+  sine1.amplitude(0.5); //volume
   sine2.amplitude(0.5);
   sine3.amplitude(0.5);
   sine4.amplitude(0.5);
-  sine1.frequency(base_freq);
-  sine2.frequency(1.015*base_freq);
-  sine3.frequency(0.503*base_freq);
-  sine4.frequency(1.496*base_freq);
+  sine5.amplitude(0.5);
+  sine6.amplitude(0.5);
+  sine7.amplitude(0.5);
+  sine8.amplitude(0.5);
+  sine1.frequency(base_freq); //frequency
+  sine2.frequency(f1*base_freq);
+  sine3.frequency(f2*base_freq);
+  sine4.frequency(f3*base_freq);
+  sine5.frequency(base_freq);
+  sine6.frequency(f4*base_freq);
+  sine7.frequency(f5*base_freq);
+  sine8.frequency(f6*base_freq);
 
   delay(700);
 
@@ -180,12 +215,12 @@ void loop() {
   PrintDeviceListChanges();
 
   //Get Throttle Input
-  float t_x_input = joysticks[1].getAxis(0); //Throttle joystick x position
-  float t_y_input = joysticks[1].getAxis(1); // Throttle joystick y position
-  float throttle_input = joysticks[1].getAxis(2); //Throttle position
-  float pattle_input = joysticks[1].getAxis(5); //Paddle position
-  float wheel_input = joysticks[1].getAxis(7); //Wheel position
-  float throttle_button = joysticks[1].getButtons(); //Throttle button
+  float t_x_input = joysticks[0].getAxis(0); //Throttle joystick x position
+  float t_y_input = joysticks[0].getAxis(1); // Throttle joystick y position
+  float throttle_input = joysticks[0].getAxis(2); //Throttle position
+  float pattle_input = joysticks[0].getAxis(5); //Paddle position
+  float wheel_input = joysticks[0].getAxis(7); //Wheel position
+  float throttle_button = joysticks[0].getButtons(); //Throttle button
 
   //Normalize Throttle Inputs
   float t_x_val = t_x_input/1023; //Throttle joystick x position
@@ -195,11 +230,11 @@ void loop() {
   float wheel_val = wheel_input/1023; //Wheel position
 
   //Get Joystick Input
-  float x_input = joysticks[0].getAxis(0); //Joystick x position
-  float y_input = joysticks[0].getAxis(1); // Joystick y position
-  float z_input = joysticks[0].getAxis(5); // Yaw Position
-  float slider_input = joysticks[0].getAxis(6); //Slider position
-  float button_input = joysticks[0].getButtons(); //Button position
+  float x_input = joysticks[1].getAxis(0); //Joystick x position
+  float y_input = joysticks[1].getAxis(1); // Joystick y position
+  float z_input = joysticks[1].getAxis(5); // Yaw Position
+  float slider_input = joysticks[1].getAxis(6); //Slider position
+  float button_input = joysticks[1].getButtons(); //Button position
 
   //Normalize Joystick Inputs
   float x_val = x_input/16383; //Throttle joystick x position
@@ -207,14 +242,23 @@ void loop() {
   float z_val = z_input/255; //Throttle position
   float slider_val = slider_input/255; //Paddle position
 
+  //Get Speed Values
+  float throttle_speed = throttle_val - prev_throttle;
+  float paddle_speed = pattle_val - prev_paddle;
+  float z_speed = z_val - prev_z;
+
+  //update previous values
+  float prev_throttle = throttle_val;
+  float prev_paddle = pattle_val;
+  float prev_z = z_val;
+
   // Place inputs in the model's input tensor
   input->data.f[0] = x_val; //joystick movement
   input->data.f[1] = y_val;
-  input->data.f[2] = z_val;
-  input->data.f[3] = t_x_val; //throttle stick inputs
-  input->data.f[4] = t_y_val;
-  input->data.f[5] = throttle_val;
-  input->data.f[6] = paddle_val;
+  input->data.f[2] = z_speed;
+  input->data.f[3] = throttle_val; //throttle stick inputs
+  input->data.f[4] = throttle_speed;
+  input->data.f[5] = paddle_speed;
 
   // Run inference, and report any error
   TfLiteStatus invoke_status = interpreter->Invoke();
@@ -226,23 +270,54 @@ void loop() {
 
   // Get outputs 
   float y1 = output->data.f[0]; //sine amplitude
-  float y2 = output->data.f[1]; //sine base frequency
-  float y3 = output->data.f[2]; //drum hit
-  float y4 = output->data.f[3]; //string1 freq
-  float y5 = output->data.f[4]; //string2 freq
-  float y6 = output->data.f[5]; //string1/2 velocity
-  float y7 = output->data.f[6]; //echo gain
-  float y8 = output->data.f[7]; //master_volume[mixer3 gains]
+  float y2 = output->data.f[1]; //sine base frequency 1
+  float y3 = output->data.f[2]; //sine base frequency 2
+  float y4 = output->data.f[3]; //drum hit
+  float y5 = output->data.f[4]; //string freq
+  float y6 = output->data.f[5]; //string volume
 
   //Change music settings
-  string1.noteOn(120,0.5);
-  delay(finger_delay);
-  string2.noteOn(120,0.5);
-  delay(finger_delay);
-  drum1.noteOn();
-  delay(finger_delay);
+  //Sine wave volume
+  float vol = 0.8*y1 + 0.2; //offset the volume so that it is never silent
+  if (vol > 1) {
+    float vol = 1;
+  }
+  sine1.amplitude(vol);
+  sine2.amplitude(vol);
+  sine3.amplitude(vol);
+  sine4.amplitude(vol);
+  sine5.amplitude(vol);
+  sine6.amplitude(vol);
+  sine7.amplitude(vol);
+  sine8.amplitude(vol);
+
+  //sine wave frequencies
+  float base_freq = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
+  sine1.frequency(base_freq);
+  sine2.frequency(f1*base_freq);
+  sine3.frequency(f2*base_freq);
+  sine4.frequency(f3*base_freq);
+
+  float base_freq2 = (823*y3) + 165; // frequency between 165 to 988 hertz(roughly trumpet)
+  sine5.frequency(base_freq2);
+  sine6.frequency(f4*base_freq2);
+  sine7.frequency(f5*base_freq2);
+  sine8.frequency(f6*base_freq2);
+
+  //Drum hit
+  if (y4>0.5) {
+    drum1.noteOn(); //hit drumn if above certain speed
+  }
+
+  //Change String Synths
+  if (y6>1) {
+    float y6 = 1; //cap y6 to 1
+  }
+  string1.noteOn(y5,y6);
+  string2.noteOn(1.5*y5,y6);
   delay(hand_delay);
-  
+  joysticks[0].joystickDataClear();
+  joysticks[1].joystickDataClear();
 }
 
 //=============================================================================
