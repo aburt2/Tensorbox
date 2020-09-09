@@ -45,11 +45,13 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=815.0000152587891,401.000011444091
 
 //set audio delays
 const int finger_delay = 5;
-const int hand_delay = 220;
+const int hand_delay = 300;
+//Set Wavetable frequencies
+float base_freq = 261;
+float base_freq2 = 261;
 const float f1 = 1.015;
 const float f2 = 0.503;
 const float f3 = 1.496;
-
 const float f4 = 2;
 const float f5 = 3;
 const float f6 = 4;
@@ -88,21 +90,24 @@ uint64_t joystick_full_notify_mask = (uint64_t) - 1;
 float x_input = 0; //joystick x position
 float y_input = 0; //joystick y position
 float z_input = 0; //joystick yaw position(twisting bit)
-float slider_input =0; //slider posiyion
-float button_input = 0; //button input
+//float slider_input =0; //slider posiyion
+//float button_input = 0; //button input
 
 //Throttle Input
-float t_x_input = 0; //Throttle joystick x position
-float t_y_input = 0; // Throttle joystick y position
+//float t_x_input = 0; //Throttle joystick x position
+//float t_y_input = 0; // Throttle joystick y position
 float throttle_input = 0; //Throttle position
 float pattle_input = 0; //Paddle position
-float wheel_input = 0; //Wheel position
-float throttle_button = 0; //Throttle Button
+//float wheel_input = 0; //Wheel position
+//float throttle_button = 0; //Throttle Button
 
 //Set speed values
 float prev_throttle = 0;
 float prev_paddle = 0;
 float prev_z = 0;
+float throttle_speed = 0;
+float paddle_speed = 0;
+float z_speed = 0;
 
 //Setup Machine learning
 #include <TensorFlowLite.h>
@@ -119,7 +124,6 @@ const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* input = nullptr;
 TfLiteTensor* output = nullptr;
-int inference_count = 0;
 
 // Create an area of memory to use for input, output, and intermediate arrays.
 // Finding the minimum value for your model may require some trial and error.
@@ -152,7 +156,6 @@ void setup() {
   mixer3.gain(2,0.33); //sine group 2 gains
 
   //Set wavetable settings
-  float base_freq = 261;
   wavetable1.setInstrument(tuba);
   wavetable2.setInstrument(tuba);
   wavetable3.setInstrument(tuba);
@@ -169,6 +172,16 @@ void setup() {
   wavetable6.amplitude(0.1);
   wavetable7.amplitude(0.1);
   wavetable8.amplitude(0.1);
+
+  //Initialize all the wavetables
+  wavetable1.playFrequency(base_freq);
+  wavetable2.playFrequency(f1*base_freq);
+  wavetable3.playFrequency(f2*base_freq);
+  wavetable4.playFrequency(f3*base_freq);
+  wavetable5.playFrequency(base_freq2);
+  wavetable6.playFrequency(f4*base_freq2);
+  wavetable7.playFrequency(f5*base_freq2);
+  wavetable8.playFrequency(f6*base_freq2);
 
   delay(700);
 
@@ -212,63 +225,79 @@ void setup() {
 }
 
 void loop() {
+  //loop wavetables
+  if (wavetable1.isPlaying() == false) {
+    wavetable1.playFrequency(base_freq);
+    wavetable2.playFrequency(f1*base_freq);
+    wavetable3.playFrequency(f2*base_freq);
+    wavetable4.playFrequency(f3*base_freq);
+  }
+  if (wavetable5.isPlaying() == false) {
+    wavetable5.playFrequency(base_freq2);
+    wavetable6.playFrequency(f4*base_freq2);
+    wavetable7.playFrequency(f5*base_freq2);
+    wavetable8.playFrequency(f6*base_freq2);
+  }
   //Get input from usb host
   myusb.Task();
   PrintDeviceListChanges();
 
   //Get Throttle Input
-  float t_x_input = joysticks[0].getAxis(0); //Throttle joystick x position
-  float t_y_input = joysticks[0].getAxis(1); // Throttle joystick y position
-  float throttle_input = joysticks[0].getAxis(2); //Throttle position
-  float pattle_input = joysticks[0].getAxis(5); //Paddle position
-  float wheel_input = joysticks[0].getAxis(7); //Wheel position
-  float throttle_button = joysticks[0].getButtons(); //Throttle button
+//  t_x_input = joysticks[0].getAxis(0); //Throttle joystick x position
+//  t_y_input = joysticks[0].getAxis(1); // Throttle joystick y position
+  throttle_input = joysticks[1].getAxis(2); //Throttle position
+  pattle_input = joysticks[1].getAxis(5); //Paddle position
+//  wheel_input = joysticks[0].getAxis(7); //Wheel position
+//  throttle_button = joysticks[0].getButtons(); //Throttle button
 
   //Normalize Throttle Inputs
-  float t_x_val = t_x_input/1023; //Throttle joystick x position
-  float t_y_val = t_y_input/1023; // Throttle joystick y position
+//  float t_x_val = t_x_input/1023; //Throttle joystick x position
+//  float t_y_val = t_y_input/1023; // Throttle joystick y position
   float throttle_val = throttle_input/65535; //Throttle position
   float pattle_val = pattle_input/1023; //Paddle position
-  float wheel_val = wheel_input/1023; //Wheel position
+//  float wheel_val = wheel_input/1023; //Wheel position
 
   //Get Joystick Input
-  float x_input = joysticks[1].getAxis(0); //Joystick x position
-  float y_input = joysticks[1].getAxis(1); // Joystick y position
-  float z_input = joysticks[1].getAxis(5); // Yaw Position
-  float slider_input = joysticks[1].getAxis(6); //Slider position
-  float button_input = joysticks[1].getButtons(); //Button position
+  x_input = joysticks[0].getAxis(0); //Joystick x position
+  y_input = joysticks[0].getAxis(1); // Joystick y position
+  z_input = joysticks[0].getAxis(5); // Yaw Position
+//  slider_input = joysticks[1].getAxis(6); //Slider position
+//  button_input = joysticks[1].getButtons(); //Button position
 
   //Normalize Joystick Inputs
   float x_val = x_input/16383; //Throttle joystick x position
   float y_val = y_input/16383; // Throttle joystick y position
   float z_val = z_input/255; //Throttle position
-  float slider_val = slider_input/255; //Paddle position
+//  float slider_val = slider_input/255; //Paddle position
 
   //Get Speed Values
-  float throttle_speed = throttle_val - prev_throttle;
-  float paddle_speed = pattle_val - prev_paddle;
-  float z_speed = z_val - prev_z;
+  throttle_speed = 65535*abs(throttle_val - prev_throttle);
+  paddle_speed = 2*abs(pattle_val - prev_paddle);
+  z_speed = 2*abs(z_val - prev_z);
 
+  //Normalize speed
+  if (throttle_speed > 1) {
+    throttle_speed = 1;
+  }
+  
   //update previous values
-  float prev_throttle = throttle_val;
-  float prev_paddle = pattle_val;
-  float prev_z = z_val;
+  prev_throttle = throttle_val;
+  prev_paddle = pattle_val;
+  prev_z = z_val;
 
   // Place inputs in the model's input tensor
   input->data.f[0] = x_val; //joystick movement
   input->data.f[1] = y_val;
   input->data.f[2] = z_speed;
+//  input->data.f[0] = 0; //joystick movement
+//  input->data.f[1] = 0;
+//  input->data.f[2] = 0;
   input->data.f[3] = throttle_val; //throttle stick inputs
   input->data.f[4] = throttle_speed;
   input->data.f[5] = paddle_speed;
 
   // Run inference, and report any error
   TfLiteStatus invoke_status = interpreter->Invoke();
-  if (invoke_status != kTfLiteOk) {
-    error_reporter->Report("Invoke failed on x_val: %f\n",
-                           static_cast<double>(x_val));
-    return;
-  }
 
   // Get outputs 
   float y1 = output->data.f[0]; //sine amplitude
@@ -278,12 +307,31 @@ void loop() {
   float y5 = output->data.f[4]; //string freq
   float y6 = output->data.f[5]; //string volume
 
-  //Change music settings
-  //Sine wave volume
-  float vol = 0.8*y1 + 0.2; //offset the volume so that it is never silent
+  
+  //wavetable volume
+  float vol = 1; //offset the volume so that it is never silent
   if (vol > 1) {
-    float vol = 1;
+    vol = 1;
   }
+  if (vol < 0) {
+    vol = 0;
+  }
+  
+  //wavetable frequencies
+  base_freq = (308*y2) + 44; // scale frequency to be between 44 to349 hertz(roughly tuba range)
+  base_freq2 = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
+  
+  //Update frequencies
+  wavetable1.setFrequency(base_freq);
+  wavetable2.setFrequency(f1*base_freq);
+  wavetable3.setFrequency(f2*base_freq);
+  wavetable4.setFrequency(f3*base_freq);  
+  wavetable5.setFrequency(base_freq2);
+  wavetable6.setFrequency(f4*base_freq2);
+  wavetable7.setFrequency(f5*base_freq2);
+  wavetable8.setFrequency(f6*base_freq2);
+
+  //Update volume
   wavetable1.amplitude(vol);
   wavetable2.amplitude(vol);
   wavetable3.amplitude(vol);
@@ -293,18 +341,6 @@ void loop() {
   wavetable7.amplitude(vol);
   wavetable8.amplitude(vol);
 
-  //sine wave frequencies
-  float base_freq = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
-  wavetable1.playFrequency(base_freq);
-  wavetable2.playFrequency(f1*base_freq);
-  wavetable3.playFrequency(f2*base_freq);
-  wavetable4.playFrequency(f3*base_freq);
-
-  float base_freq2 = (823*y3) + 165; // frequency between 165 to 988 hertz(roughly trumpet)
-  wavetable5.playFrequency(base_freq2);
-  wavetable6.playFrequency(f4*base_freq2);
-  wavetable7.playFrequency(f5*base_freq2);
-  wavetable8.playFrequency(f6*base_freq2);
 
   //Drum hit
   if (y4>0.5) {
@@ -313,13 +349,24 @@ void loop() {
 
   //Change String Synths
   if (y6>1) {
-    float y6 = 1; //cap y6 to 1
+    y6 = 1; //cap y6 to 1
+  }
+  if (y6<0) {
+    y6 = 0;
   }
   string1.noteOn(y5,y6);
   string2.noteOn(1.5*y5,y6);
   delay(hand_delay);
   joysticks[0].joystickDataClear();
   joysticks[1].joystickDataClear();
+  Serial.printf("\n*********************\n");
+  Serial.printf("Throttle Speed: %f\n",throttle_speed);
+  Serial.printf("Volume: %f\n",vol);
+  Serial.printf("Paddle Speed: %f\n",paddle_speed);
+  Serial.printf("Drum hit: %f\n",y4);
+  Serial.printf("Z Speed: %f\n",z_speed);
+  Serial.printf("String Volume: %f\n",y6);
+  Serial.printf("*********************\n");
 }
 
 //=============================================================================
