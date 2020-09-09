@@ -3,35 +3,37 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include "trombone_samples.h"
+#include "tuba_samples.h"
 
 // GUItool: begin automatically generated code
-AudioSynthWaveformSine   sine3;          //xy=119.00000381469727,302.0000114440918
-AudioSynthWaveformSine   sine1;          //xy=120,209.00000667572021
-AudioSynthWaveformSine   sine2;          //xy=120.00000381469727,254.0000114440918
-AudioSynthWaveformSine   sine4;          //xy=120.0000057220459,349.00001287460327
-AudioSynthWaveformSine   sine7; //xy=122.00000381469727,526.0000047683716
-AudioSynthWaveformSine   sine5; //xy=123,433
-AudioSynthWaveformSine   sine6; //xy=123.00000381469727,478.0000047683716
-AudioSynthWaveformSine   sine8; //xy=123.0000057220459,573.000006198883
 AudioSynthKarplusStrong  string1;        //xy=129,69.00000762939453
 AudioSynthKarplusStrong  string2;        //xy=129,112.00000190734863
 AudioSynthSimpleDrum     drum1;          //xy=130.00001525878906,30.000001907348633
+AudioSynthWavetable      wavetable4;     //xy=147,340.79999351501465
+AudioSynthWavetable      wavetable3;     //xy=149,299.799991607666
+AudioSynthWavetable      wavetable1;     //xy=152,215.39999389648438
+AudioSynthWavetable      wavetable2;     //xy=153,256.799991607666
+AudioSynthWavetable      wavetable5;     //xy=187,435.79999446868896
+AudioSynthWavetable      wavetable6;     //xy=191,479.79999446868896
+AudioSynthWavetable      wavetable8;     //xy=195,558.7999954223633
+AudioSynthWavetable      wavetable7;     //xy=196.00000381469727,520.7999954223633
 AudioMixer4              mixer2;         //xy=367,101
 AudioMixer4              mixer1;         //xy=386.00000762939453,254.0000114440918
 AudioMixer4              mixer4; //xy=389.00000762939453,478.0000047683716
 AudioMixer4              mixer3;         //xy=700.0000076293945,213.00000381469727
 AudioOutputI2S           i2s1;           //xy=900.0000114440918,185.00000381469727
-AudioConnection          patchCord1(sine3, 0, mixer1, 2);
-AudioConnection          patchCord2(sine1, 0, mixer1, 0);
-AudioConnection          patchCord3(sine2, 0, mixer1, 1);
-AudioConnection          patchCord4(sine4, 0, mixer1, 3);
-AudioConnection          patchCord5(sine7, 0, mixer4, 2);
-AudioConnection          patchCord6(sine5, 0, mixer4, 0);
-AudioConnection          patchCord7(sine6, 0, mixer4, 1);
-AudioConnection          patchCord8(sine8, 0, mixer4, 3);
-AudioConnection          patchCord9(string1, 0, mixer2, 1);
-AudioConnection          patchCord10(string2, 0, mixer2, 2);
-AudioConnection          patchCord11(drum1, 0, mixer2, 0);
+AudioConnection          patchCord1(string1, 0, mixer2, 1);
+AudioConnection          patchCord2(string2, 0, mixer2, 2);
+AudioConnection          patchCord3(drum1, 0, mixer2, 0);
+AudioConnection          patchCord4(wavetable4, 0, mixer1, 3);
+AudioConnection          patchCord5(wavetable3, 0, mixer1, 2);
+AudioConnection          patchCord6(wavetable1, 0, mixer1, 0);
+AudioConnection          patchCord7(wavetable2, 0, mixer1, 1);
+AudioConnection          patchCord8(wavetable5, 0, mixer4, 0);
+AudioConnection          patchCord9(wavetable6, 0, mixer4, 1);
+AudioConnection          patchCord10(wavetable8, 0, mixer4, 3);
+AudioConnection          patchCord11(wavetable7, 0, mixer4, 2);
 AudioConnection          patchCord12(mixer2, 0, mixer3, 0);
 AudioConnection          patchCord13(mixer1, 0, mixer3, 1);
 AudioConnection          patchCord14(mixer4, 0, mixer3, 2);
@@ -149,24 +151,24 @@ void setup() {
   mixer3.gain(1,0.33); //sine group 1 gains
   mixer3.gain(2,0.33); //sine group 2 gains
 
-  //Set sine settings
+  //Set wavetable settings
   float base_freq = 261;
-  sine1.amplitude(0.5); //volume
-  sine2.amplitude(0.5);
-  sine3.amplitude(0.5);
-  sine4.amplitude(0.5);
-  sine5.amplitude(0.5);
-  sine6.amplitude(0.5);
-  sine7.amplitude(0.5);
-  sine8.amplitude(0.5);
-  sine1.frequency(base_freq); //frequency
-  sine2.frequency(f1*base_freq);
-  sine3.frequency(f2*base_freq);
-  sine4.frequency(f3*base_freq);
-  sine5.frequency(base_freq);
-  sine6.frequency(f4*base_freq);
-  sine7.frequency(f5*base_freq);
-  sine8.frequency(f6*base_freq);
+  wavetable1.setInstrument(tuba);
+  wavetable2.setInstrument(tuba);
+  wavetable3.setInstrument(tuba);
+  wavetable4.setInstrument(tuba);
+  wavetable5.setInstrument(trombone);
+  wavetable6.setInstrument(trombone);
+  wavetable7.setInstrument(trombone);
+  wavetable8.setInstrument(trombone);
+  wavetable1.amplitude(0.1);
+  wavetable2.amplitude(0.1);
+  wavetable3.amplitude(0.1);
+  wavetable4.amplitude(0.1);
+  wavetable5.amplitude(0.1);
+  wavetable6.amplitude(0.1);
+  wavetable7.amplitude(0.1);
+  wavetable8.amplitude(0.1);
 
   delay(700);
 
@@ -282,27 +284,27 @@ void loop() {
   if (vol > 1) {
     float vol = 1;
   }
-  sine1.amplitude(vol);
-  sine2.amplitude(vol);
-  sine3.amplitude(vol);
-  sine4.amplitude(vol);
-  sine5.amplitude(vol);
-  sine6.amplitude(vol);
-  sine7.amplitude(vol);
-  sine8.amplitude(vol);
+  wavetable1.amplitude(vol);
+  wavetable2.amplitude(vol);
+  wavetable3.amplitude(vol);
+  wavetable4.amplitude(vol);
+  wavetable5.amplitude(vol);
+  wavetable6.amplitude(vol);
+  wavetable7.amplitude(vol);
+  wavetable8.amplitude(vol);
 
   //sine wave frequencies
   float base_freq = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
-  sine1.frequency(base_freq);
-  sine2.frequency(f1*base_freq);
-  sine3.frequency(f2*base_freq);
-  sine4.frequency(f3*base_freq);
+  wavetable1.playFrequency(base_freq);
+  wavetable2.playFrequency(f1*base_freq);
+  wavetable3.playFrequency(f2*base_freq);
+  wavetable4.playFrequency(f3*base_freq);
 
   float base_freq2 = (823*y3) + 165; // frequency between 165 to 988 hertz(roughly trumpet)
-  sine5.frequency(base_freq2);
-  sine6.frequency(f4*base_freq2);
-  sine7.frequency(f5*base_freq2);
-  sine8.frequency(f6*base_freq2);
+  wavetable5.playFrequency(base_freq2);
+  wavetable6.playFrequency(f4*base_freq2);
+  wavetable7.playFrequency(f5*base_freq2);
+  wavetable8.playFrequency(f6*base_freq2);
 
   //Drum hit
   if (y4>0.5) {
