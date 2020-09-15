@@ -5,56 +5,67 @@
 #include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
-AudioSynthKarplusStrong  string1;        //xy=127.00000381469727,107.0000114440918
-AudioSynthKarplusStrong  string2;        //xy=127,146.00000476837158
-AudioSynthSimpleDrum     drum1;          //xy=130.00001525878906,30.000001907348633
-AudioSynthSimpleDrum     drum2; //xy=126,66
-AudioSynthWavetable      wavetable4;     //xy=147,340.79999351501465
-AudioSynthWavetable      wavetable3;     //xy=149,299.799991607666
-AudioSynthWavetable      wavetable1;     //xy=152,215.39999389648438
-AudioSynthWavetable      wavetable2;     //xy=153,256.799991607666
-AudioSynthWavetable      wavetable5;     //xy=187,435.79999446868896
-AudioSynthWavetable      wavetable6;     //xy=191,479.79999446868896
-AudioSynthWavetable      wavetable8;     //xy=195,558.7999954223633
-AudioSynthWavetable      wavetable7;     //xy=196.00000381469727,520.7999954223633
-AudioMixer4              mixer2;         //xy=367,101
-AudioMixer4              mixer1;         //xy=386.00000762939453,254.0000114440918
-AudioMixer4              mixer4; //xy=389.00000762939453,478.0000047683716
-AudioMixer4              mixer3;         //xy=700.0000076293945,213.00000381469727
-AudioOutputI2S           i2s1;           //xy=900.0000114440918,185.00000381469727
-AudioConnection          patchCord1(drum2, 0, mixer2, 1);
-AudioConnection          patchCord2(string1, 0, mixer2, 2);
-AudioConnection          patchCord3(string2, 0, mixer2, 3);
-AudioConnection          patchCord4(drum1, 0, mixer2, 0);
-AudioConnection          patchCord5(wavetable4, 0, mixer1, 3);
-AudioConnection          patchCord6(wavetable3, 0, mixer1, 2);
-AudioConnection          patchCord7(wavetable1, 0, mixer1, 0);
-AudioConnection          patchCord8(wavetable2, 0, mixer1, 1);
-AudioConnection          patchCord9(wavetable5, 0, mixer4, 0);
-AudioConnection          patchCord10(wavetable6, 0, mixer4, 1);
-AudioConnection          patchCord11(wavetable8, 0, mixer4, 3);
-AudioConnection          patchCord12(wavetable7, 0, mixer4, 2);
-AudioConnection          patchCord13(mixer2, 0, mixer3, 0);
-AudioConnection          patchCord14(mixer1, 0, mixer3, 1);
-AudioConnection          patchCord15(mixer4, 0, mixer3, 2);
-AudioConnection          patchCord16(mixer3, 0, i2s1, 0);
-AudioConnection          patchCord17(mixer3, 0, i2s1, 1);
+AudioSynthWavetable      wavetable4;     //xy=149,145.8000087738037
+AudioSynthWavetable      wavetable5;     //xy=150,202.80004692077637
+AudioSynthWavetable      wavetable3;     //xy=151,104.80000686645508
+AudioSynthWavetable      wavetable1;     //xy=154,20.400009155273438
+AudioSynthWavetable      wavetable6;     //xy=154,246.80004692077637
+AudioSynthWavetable      wavetable2;     //xy=155,61.80000686645508
+AudioSynthWavetable      wavetable8;     //xy=158,325.8000478744507
+AudioSynthKarplusStrong  string1;        //xy=158.00000381469727,384.0000114440918
+AudioSynthWavetable      wavetable7;     //xy=159.00000381469727,287.8000478744507
+AudioSynthKarplusStrong  string2;        //xy=160,426
+AudioSynthWavetable      wavetable13; //xy=168,566
+AudioSynthWavetable      wavetable15; //xy=169,648.9999618530273
+AudioSynthWavetable      wavetable14; //xy=170,606.9999618530273
+AudioSynthWavetable      wavetable16; //xy=170.00000381469727,685.999963760376
+AudioMixer4              mixer2; //xy=352.00000953674316,245.00009536743164
+AudioMixer4              mixer3;         //xy=365.0000114440918,389.0000534057617
+AudioMixer4              mixer4; //xy=371.00004959106445,584.0000171661377
+AudioMixer4              mixer1;         //xy=388.00000762939453,59.00002670288086
+AudioMixer4              mixer5;         //xy=700.0000076293945,213.00000381469727
+AudioOutputI2S           i2s1;           //xy=901.0000267028809,195.00000476837158
+AudioConnection          patchCord1(wavetable4, 0, mixer1, 3);
+AudioConnection          patchCord2(wavetable5, 0, mixer2, 0);
+AudioConnection          patchCord3(wavetable3, 0, mixer1, 2);
+AudioConnection          patchCord4(wavetable1, 0, mixer1, 0);
+AudioConnection          patchCord5(wavetable6, 0, mixer2, 1);
+AudioConnection          patchCord6(wavetable2, 0, mixer1, 1);
+AudioConnection          patchCord7(wavetable8, 0, mixer2, 3);
+AudioConnection          patchCord8(string1, 0, mixer3, 0);
+AudioConnection          patchCord9(wavetable7, 0, mixer2, 2);
+AudioConnection          patchCord10(string2, 0, mixer3, 1);
+AudioConnection          patchCord11(wavetable13, 0, mixer4, 0);
+AudioConnection          patchCord12(wavetable15, 0, mixer4, 2);
+AudioConnection          patchCord13(wavetable14, 0, mixer4, 1);
+AudioConnection          patchCord14(wavetable16, 0, mixer4, 3);
+AudioConnection          patchCord15(mixer2, 0, mixer5, 1);
+AudioConnection          patchCord16(mixer3, 0, mixer5, 2);
+AudioConnection          patchCord17(mixer4, 0, mixer5, 3);
+AudioConnection          patchCord18(mixer1, 0, mixer5, 0);
+AudioConnection          patchCord19(mixer5, 0, i2s1, 0);
+AudioConnection          patchCord20(mixer5, 0, i2s1, 1);
 AudioControlSGTL5000     sgtl5000_1;     //xy=815.0000152587891,401.0000114440918
 // GUItool: end automatically generated code
+
+
 
 //Include wavetables
 #include "trombone_samples.h"
 #include "trumpet_samples.h"
+#include "drum_samples.h"
+#include "guitar_samples.h"
 
 //set audio delays
-const int finger_delay = 5;
 const int hand_delay = 300;
 //Set Wavetable frequencies
 float base_freq = 261;
 float base_freq2 = 261;
-const float f1 = 1.015;
-const float f2 = 0.503;
-const float f3 = 1.496;
+float string_freq = 100;
+float drum_freq = 100;
+const float f1 = 0.5;
+const float f2 = 1.5;
+const float f3 = 4/3;
 const float f4 = 2;
 const float f5 = 3;
 const float f6 = 4;
@@ -139,46 +150,46 @@ void setup() {
   AudioMemory(250);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.3);
-  //Sine Group 1
-  mixer1.gain(0,0.25); //sine1 gain
-  mixer1.gain(1,0.25); //sine2 gain
-  mixer1.gain(2,0.25); //sine3 gain
-  mixer1.gain(3,0.25); //sine4 gain
-  //Sine Group 2
-  mixer4.gain(0,0.25); //sine5 gain
-  mixer4.gain(1,0.25); //sine6 gain
-  mixer4.gain(2,0.25); //sine7 gain
-  mixer4.gain(3,0.25); //sine8 gain
-  //Drum and Strings
-  mixer2.gain(0,0.25); //drum1 gain
-  mixer2.gain(1,0.25); //drum2 gain
-  mixer2.gain(2,0.25); //string1 gain
-  mixer2.gain(3,0.25); //string2 gain
+  //Wavetable Group 1
+  mixer1.gain(0,0.25); 
+  mixer1.gain(1,0.25); 
+  mixer1.gain(2,0.25); 
+  mixer1.gain(3,0.25); 
+  //Wavetable Group 2
+  mixer2.gain(0,0.25); 
+  mixer2.gain(1,0.25); 
+  mixer2.gain(2,0.25); 
+  mixer2.gain(3,0.25); 
+  //Wavetable Group 3
+  mixer3.gain(0,0.5);
+  mixer3.gain(1,0.5);
+  //Wavetable Group 4
+  mixer4.gain(0,0.25);
+  mixer4.gain(1,0.25);
+  mixer4.gain(2,0.25);
+  mixer4.gain(3,0.25);
   //Final Mixer
-  mixer3.gain(0,0.33); //drum/guitar gain
-  mixer3.gain(1,0.33); //sine group 1 gains
-  mixer3.gain(2,0.33); //sine group 2 gains
+  mixer5.gain(0,0.25); //trumpets
+  mixer5.gain(1,0.25); //trombone
+  mixer5.gain(2,0.25); //guitar
+  mixer5.gain(3,0.25); //drums
 
-  //Set drum 1 properties
-  drum1.frequency(60);
-  drum1.length(1500);
-  drum1.secondMix(0.0);
-  drum1.pitchMod(0.55);
-  //set drum 2 properties
-  drum2.frequency(60);
-  drum2.length(300);
-  drum2.secondMix(0.0);
-  drum2.pitchMod(1.0);
-
-  //Set wavetable settings
-  wavetable1.setInstrument(tuba);
-  wavetable2.setInstrument(tuba);
-  wavetable3.setInstrument(tuba);
-  wavetable4.setInstrument(tuba);
+  //Set wavetable instruments
+  wavetable1.setInstrument(trumpet);
+  wavetable2.setInstrument(trumpet);
+  wavetable3.setInstrument(trumpet);
+  wavetable4.setInstrument(trumpet);
   wavetable5.setInstrument(trombone);
   wavetable6.setInstrument(trombone);
   wavetable7.setInstrument(trombone);
   wavetable8.setInstrument(trombone);
+  wavetable13.setInstrument(drum);
+  wavetable14.setInstrument(drum);
+  wavetable15.setInstrument(drum);
+  wavetable16.setInstrument(drum);
+
+
+  //Set wavetable amplitudes
   wavetable1.amplitude(0.1);
   wavetable2.amplitude(0.1);
   wavetable3.amplitude(0.1);
@@ -187,6 +198,10 @@ void setup() {
   wavetable6.amplitude(0.1);
   wavetable7.amplitude(0.1);
   wavetable8.amplitude(0.1);
+  wavetable13.amplitude(1);
+  wavetable14.amplitude(1);
+  wavetable15.amplitude(1);
+  wavetable16.amplitude(1);
 
   //Initialize all the wavetables
   wavetable1.playFrequency(base_freq);
@@ -197,6 +212,10 @@ void setup() {
   wavetable6.playFrequency(f4*base_freq2);
   wavetable7.playFrequency(f5*base_freq2);
   wavetable8.playFrequency(f6*base_freq2);
+  wavetable13.playFrequency(drum_freq);
+  wavetable14.playFrequency(drum_freq);
+  wavetable15.playFrequency(drum_freq);
+  wavetable16.playFrequency(drum_freq);
 
   delay(700);
 
@@ -350,18 +369,30 @@ void loop() {
   //wavetable frequencies
   base_freq = (308*y2) + 44; // scale frequency to be between 44 to349 hertz(roughly tuba range)
   base_freq2 = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
-  
+  string_freq = y5;
+  //Change String Synths
+  if (y6>1) {
+    y6 = 1; //cap y6 to 1
+  }
+  if (y6<0) {
+    y6 = 0;
+  }
   //Update frequencies
+  //Update trumpet
   wavetable1.setFrequency(base_freq);
   wavetable2.setFrequency(f1*base_freq);
   wavetable3.setFrequency(f2*base_freq);
   wavetable4.setFrequency(f3*base_freq);  
+  //Update trombone frequencies  
   wavetable5.setFrequency(base_freq2);
   wavetable6.setFrequency(f4*base_freq2);
   wavetable7.setFrequency(f5*base_freq2);
   wavetable8.setFrequency(f6*base_freq2);
+  //Update String frequencies
+  string1.noteOn(string_freq,y6);
+  string2.noteOn(1.5*string_freq,y6);
 
-  //Update volume
+  //Update brass volume
   wavetable1.amplitude(vol);
   wavetable2.amplitude(vol);
   wavetable3.amplitude(vol);
@@ -371,22 +402,13 @@ void loop() {
   wavetable7.amplitude(vol);
   wavetable8.amplitude(vol);
 
-
   //Drum hit
   if (y4>0.1) {
-    drum1.noteOn(); //hit drumn if above certain speed
-    drum2.noteOn();
+    wavetable13.playFrequency(drum_freq);
+    wavetable14.playFrequency(drum_freq);
+    wavetable15.playFrequency(drum_freq);
+    wavetable16.playFrequency(drum_freq);
   }
-
-  //Change String Synths
-  if (y6>1) {
-    y6 = 1; //cap y6 to 1
-  }
-  if (y6<0) {
-    y6 = 0;
-  }
-  string1.noteOn(y5,y6);
-  string2.noteOn(1.5*y5,y6);
   delay(hand_delay);
   joysticks[0].joystickDataClear();
   joysticks[1].joystickDataClear();
