@@ -54,7 +54,6 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=815.0000152587891,401.000011444091
 #include "trombone_samples.h"
 #include "trumpet_samples.h"
 #include "drum_samples.h"
-#include "guitar_samples.h"
 
 //set audio delays
 const int hand_delay = 300;
@@ -308,6 +307,7 @@ void loop() {
   throttle_speed = throttle_val - prev_throttle;
   paddle_speed = pattle_val - prev_paddle;
   z_speed = z_val - prev_z;
+//  y_speed = y_val - prev_y;
 
   //Take the absolute value(abs function doesnt seem to work)
   if (throttle_speed < 0) {
@@ -338,9 +338,6 @@ void loop() {
   input->data.f[0] = x_val; //joystick movement
   input->data.f[1] = y_val;
   input->data.f[2] = z_speed;
-//  input->data.f[0] = 0; //joystick movement
-//  input->data.f[1] = 0;
-//  input->data.f[2] = 0;
   input->data.f[3] = throttle_val; //throttle stick inputs
   input->data.f[4] = throttle_speed;
   input->data.f[5] = paddle_speed;
@@ -368,7 +365,7 @@ void loop() {
   
   //wavetable frequencies
   base_freq = (308*y2) + 44; // scale frequency to be between 44 to349 hertz(roughly tuba range)
-  base_freq2 = (490*y2) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
+  base_freq2 = (490*y3) + 33; // scale frequency to be between 33 to 523 hertz(roughly base trombone range)
   string_freq = y5;
   //Change String Synths
   if (y6>1) {
