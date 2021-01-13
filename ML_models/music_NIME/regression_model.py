@@ -15,8 +15,8 @@ import tensorflow_docs.modeling
 
 def build_model():
   model = keras.Sequential([
-    layers.Dense(10, activation='sigmoid', input_shape=[6,]),
-    layers.Dense(10, activation='sigmoid'),
+    layers.Dense(10, activation='sigmoid', input_shape=[7,]),
+    layers.Dense(128, activation='sigmoid'),
     layers.Dense(6)
   ])
 
@@ -28,9 +28,9 @@ def build_model():
   return model
 
 # Import data
-dataset_path = "C:/Users/aniyo/Documents/Honours_Code/ML_models/music_synths/data.csv"
+dataset_path = "C:/Users/aniyo/Documents/Honours_Code/ML_models/music_NIME/data.csv"
 dataset = pd.read_csv(dataset_path)
-inputs = ['in1','in2','in3','in4','in5','in6']
+inputs = ['in1','in2','in3','in4','in5','in6','in7']
 outputs = ['out1','out2','out3','out4','out5','out6']
 
 #Split dataset
@@ -63,16 +63,11 @@ test_dataset = test_dataset.batch(64)
 #Build model
 model = build_model()
 
-#Save model image
-keras.utils.plot_model(model, "ml_model.png", show_shapes=True)
+# #Save model image
+# keras.utils.plot_model(model, "ml_model.png", show_shapes=True)
 
-# #Compile model
-# model.compile(loss='mse',
-#               optimizer=tf.keras.optimizers.RMSprop(0.001),
-#               metrics=['mae', 'mse'])
-
-# #Train Model
-# history = model.fit(train_dataset,epochs=300)
+#Train Model
+history = model.fit(train_dataset,epochs=1000)
 
 # # Test model
 # test_scores = model.evaluate(test_dataset, verbose=2)
@@ -88,26 +83,22 @@ keras.utils.plot_model(model, "ml_model.png", show_shapes=True)
 #   f.write(tflite_model)
 
 # #Visualize it
-# test_predictions = model.predict(x_test)
-# #Plot results so I can see whats up(show how well it predicts outputs)
-# fig,axs = plt.subplots(2,3)
-# idx = 0
-# for ax in axs.flatten():
-#     header = outputs[idx]
-#     ax.scatter(y_test[header], test_predictions[:,idx])
-#     x_str = f'True Values [{header}]'
-#     y_str = f'Predictions [{header}]'
-#     ax.set_xlabel(x_str)
-#     ax.set_ylabel(y_str)
-#     lims = [0, 1]
-#     ax.set_xlim(lims)
-#     ax.set_ylim(lims)
-#     ax.plot(lims, lims)
-#     idx += 1
-# plt.show()
+test_predictions = model.predict(x_test)
+#Plot results so I can see whats up(show how well it predicts outputs)
+fig,axs = plt.subplots(2,3)
+idx = 0
+for ax in axs.flatten():
+    header = outputs[idx]
+    ax.scatter(y_test[header], test_predictions[:,idx])
+    x_str = f'True Values [{header}]'
+    y_str = f'Predictions [{header}]'
+    ax.set_xlabel(x_str)
+    ax.set_ylabel(y_str)
+    idx += 1
+plt.show()
 
-#Plot results so I can see whats up(show range of inputs)
-# fig,axs = plt.subplots(1,3)
+# Plot results so I can see whats up(show range of inputs)
+# fig,axs = plt.subplots(2,3)
 # idx = 0
 # for ax in axs.flatten():
 #     header = inputs[idx]
@@ -120,12 +111,12 @@ keras.utils.plot_model(model, "ml_model.png", show_shapes=True)
 # plt.show()
 
 #Plot results so I can see whats up(plot an input to all the outputs)
-# fig,axs = plt.subplots(2,4)
+# fig,axs = plt.subplots(2,3)
 # idx = 0
 # for ax in axs.flatten():
 #     header = outputs[idx]
-#     ax.scatter(x_test['in3'], test_predictions[:,idx])
-#     x_str = f'True Values [{header}]'
+#     ax.scatter(x_test['in7'], test_predictions[:,idx])
+#     x_str = f'Input [{header}]'
 #     y_str = f'Predictions [{header}]'
 #     ax.set_xlabel(x_str)
 #     ax.set_ylabel(y_str)
